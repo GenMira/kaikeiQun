@@ -1,11 +1,31 @@
 import { useState } from 'react'
 import '../components/Create.css'
 import type { item } from '../components/interface'
+import { generateWorkbook } from '../lib/excel/generateWorkbooks';
 
 function CreateNewProject() {
   const [items,setItems] = useState<item[]>([]);
   const [itemName,setItemName] = useState<string>("");
   const [itemPrice,setItemPrice] = useState<number>(0);
+
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleDownload() {
+  setIsGenerating(true)
+  setError('')
+
+  try {
+    const blob = await generateWorkbook(items)
+    downloadBlob(blob, '会計くん.xlsm')
+  } catch (cause) {
+    setError(
+      cause instanceof Error ? cause.message : '生成に失敗しました',
+    )
+  } finally {
+    setIsGenerating(false)
+  }
+}
 
 
   return(
